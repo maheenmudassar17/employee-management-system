@@ -12,6 +12,9 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
+    
+
+    
 
 
 # employee_management/models.py
@@ -21,8 +24,17 @@ class Employee(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=255, default='Untitled Task')
     description = models.TextField()
-    assigned_to = models.ForeignKey('Employee', on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(Employee, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Completed', 'Completed')], default='Pending')
 
     def __str__(self):
         return f"Task {self.id}"  # Or another field to represent the task
+
+
+from django.contrib import admin
+from .models import Task
+
+class TaskAdmin(admin.ModelAdmin):
+    list_filter = ('status',)  # This will allow filtering by status
+
+admin.site.register(Task, TaskAdmin)

@@ -1,6 +1,4 @@
 # employee_management/views.py
-
-from asyncio import Task
 from urllib import request
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -11,8 +9,6 @@ from .models import Employee
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect
-from .models import Task
-from django.shortcuts import render
 from .models import Task
 
 
@@ -91,10 +87,16 @@ def employee_login(request):
     return render(request, 'employee_login.html')
 
 @login_required(login_url='/employee-login/')
+@login_required(login_url='/employee-login/')
 def employee_portal(request):
     if request.user.is_superuser:
         return redirect('admin_dashboard')
-    return render(request, 'employee_portal.html')
+
+    employee = get_object_or_404(Employee, user=request.user)
+    tasks = Task.objects.filter(assigned_to=employee).order_by('-id')
+
+    return render(request, 'employee_portal.html', {'tasks': tasks})
+
 
 
 @login_required(login_url='/')
@@ -112,7 +114,7 @@ def assign_task(request):
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
 def task_list(request):
-    tasks = Task.objects.all().order_by('-created_at')
+    tasks = Task.objects.all()
     return render(request, 'task_list.html', {'tasks': tasks})
 
 
@@ -146,14 +148,9 @@ def delete_employee(request, emp_id):
     return redirect('admin_dashboard')
 
 
-def task_list(request):
-    tasks = Task.objects.all()  # Fetch all tasks
-    return render(request, 'task_list.html', {'tasks': tasks})
-
-# views.py
 
 @login_required
-def employee_tasks(request):
+def employee_task_list(request):
     employee = Employee.objects.get(user=request.user)
     tasks = Task.objects.filter(assigned_to=employee)
     return render(request, 'employee_tasks.html', {'tasks': tasks})
@@ -208,3 +205,8 @@ def delete_task(request, task_id):
     task.delete()
     return redirect('task_list')
 
+
+def custom_login(request):
+    # login logic
+    if request.user.is_authenticated:
+        return redirect('employee_task_list')  # Redirect to the employee task list page

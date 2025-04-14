@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2>Welcome, {{ request.user.first_name }}!</h2>
-<p>This is your employee portal.</p>
+<div class="container mt-5">
+    <h2>Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h2>
 
-<a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+    <div class="mt-4">
+        <a href="{% url 'employee_tasks' %}" class="btn btn-primary">View My Tasks</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger ml-2">Logout</a>
+    </div>
+</div>
 {% endblock %}
