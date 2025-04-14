@@ -1,7 +1,7 @@
 # employee_management/views.py
 
 from asyncio import Task
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -109,3 +109,33 @@ def assign_task(request):
 def task_list(request):
     tasks = Task.objects.all().order_by('-created_at')
     return render(request, 'task_list.html', {'tasks': tasks})
+
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def edit_employee(request, emp_id):
+    employee = get_object_or_404(Employee, id=emp_id)
+    user = employee.user
+
+    if request.method == 'POST':
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
+        user.email = request.POST['email']
+        user.username = request.POST['username']
+        user.save()
+
+        employee.designation = request.POST['designation']
+        employee.salary = request.POST['salary']
+        employee.save()
+
+        return redirect('admin_dashboard')
+
+    return render(request, 'edit_employee.html', {'employee': employee})
+    
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def delete_employee(request, emp_id):
+    employee = get_object_or_404(Employee, id=emp_id)
+    employee.user.delete()  # This also deletes the related employee
+    return redirect('admin_dashboard')
