@@ -17,6 +17,13 @@ urlpatterns = [
     path('employee/edit/<int:emp_id>/', views.edit_employee, name='edit_employee'),
     path('employee/delete/<int:emp_id>/', views.delete_employee, name='delete_employee'),
     path('tasks/', views.task_list, name='task_list'),
+    path('employee/tasks/', views.employee_tasks, name='employee_tasks'),
+    path('employee/tasks/done/<int:task_id>/', views.mark_task_done, name='mark_task_done'),
+    path('tasks/', views.task_list, name='task_list'),  # existing task list URL
+    path('tasks/add/', views.add_task, name='add_task'), 
+    path('edit-task/<int:task_id>/', views.edit_task, name='edit_task'),
+    path('delete-task/<int:task_id>/', views.delete_task, name='delete_task'),
+
 
 
 ]

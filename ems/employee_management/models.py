@@ -16,17 +16,13 @@ class Employee(models.Model):
 
 # employee_management/models.py
 
+# models.py
 
 class Task(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    name = models.CharField(max_length=255, default='Untitled Task')
     description = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
-    STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Completed', 'Completed'),
-    ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    assigned_to = models.ForeignKey('Employee', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Completed', 'Completed')], default='Pending')
 
     def __str__(self):
-        return f"{self.title} -> {self.employee.user.username}"
+        return f"Task {self.id}"  # Or another field to represent the task

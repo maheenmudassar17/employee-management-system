@@ -24,5 +24,4 @@ from .models import Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['employee', 'title', 'description', 'status']
-
+        fields = ['name','description', 'assigned_to', 'status']  # Only include fields that are defined in the model

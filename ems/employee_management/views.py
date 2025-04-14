@@ -1,6 +1,7 @@
 # employee_management/views.py
 
 from asyncio import Task
+from urllib import request
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -148,3 +149,62 @@ def delete_employee(request, emp_id):
 def task_list(request):
     tasks = Task.objects.all()  # Fetch all tasks
     return render(request, 'task_list.html', {'tasks': tasks})
+
+# views.py
+
+@login_required
+def employee_tasks(request):
+    employee = Employee.objects.get(user=request.user)
+    tasks = Task.objects.filter(assigned_to=employee)
+    return render(request, 'employee_tasks.html', {'tasks': tasks})
+
+
+# views.py
+
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+
+@require_POST
+@login_required
+def mark_task_done(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if task.assigned_to.user == request.user:
+        task.status = 'Completed'
+        task.save()
+    return redirect('employee_tasks')
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def add_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task_list')
+    else:
+        form = TaskForm()
+    return render(request, 'assign_task.html', {'form': form})
+
+
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def edit_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('task_list')
+    else:
+        form = TaskForm(instance=task)
+    return render(request, 'edit_task.html', {'form': form})
+
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.delete()
+    return redirect('task_list')
+

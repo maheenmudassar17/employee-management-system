@@ -1,0 +1,41 @@
+<!-- templates/employee_tasks.html -->
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>My Tasks</h2>
+    <a href="{% url 'logout' %}" class="btn btn-danger mb-3 float-end">Logout</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.name }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.status }}</td>
+                <td>
+                    {% if task.status != 'Completed' %}
+                    <form method="post" action="{% url 'mark_task_done' task.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-success">Mark as Done</button>
+                    </form>
+                    {% else %}
+                    <span class="text-success">Done</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
