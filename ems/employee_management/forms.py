@@ -15,3 +15,14 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['designation', 'salary']
+
+
+# employee_management/forms.py
+
+from .models import Task
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['employee', 'title', 'description', 'status']
+

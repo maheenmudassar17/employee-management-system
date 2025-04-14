@@ -1,10 +1,11 @@
 # employee_management/views.py
 
+from asyncio import Task
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .forms import UserForm, EmployeeForm
+from .forms import TaskForm, UserForm, EmployeeForm
 from .models import Employee
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -36,7 +37,8 @@ def login_view(request):
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
 def admin_dashboard(request):
-    return render(request, 'dashboard.html')
+    employees = Employee.objects.all()
+    return render(request, 'admin_dashboard.html', {'employees': employees})
 
 def logout_view(request):
     logout(request)
@@ -88,3 +90,22 @@ def employee_portal(request):
     if request.user.is_superuser:
         return redirect('admin_dashboard')
     return render(request, 'employee_portal.html')
+
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def assign_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task_list')
+    else:
+        form = TaskForm()
+    return render(request, 'assign_task.html', {'form': form})
+
+@login_required(login_url='/')
+@user_passes_test(superuser_only, login_url='/')
+def task_list(request):
+    tasks = Task.objects.all().order_by('-created_at')
+    return render(request, 'task_list.html', {'tasks': tasks})
