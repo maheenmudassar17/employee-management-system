@@ -10,6 +10,10 @@ from .models import Employee
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect
+from .models import Task
+from django.shortcuts import render
+from .models import Task
+
 
 
 
@@ -139,3 +143,8 @@ def delete_employee(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
     employee.user.delete()  # This also deletes the related employee
     return redirect('admin_dashboard')
+
+
+def task_list(request):
+    tasks = Task.objects.all()  # Fetch all tasks
+    return render(request, 'task_list.html', {'tasks': tasks})
