@@ -173,31 +173,44 @@ def mark_task_done(request, task_id):
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
 def add_task(request):
+    # Get the list of employees to populate the dropdown
+    employees = Employee.objects.all()
+    form = TaskForm()
+
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
+            # Process form data
             form.save()
-            return redirect('task_list')
-    else:
-        form = TaskForm()
-    return render(request, 'assign_task.html', {'form': form})
 
+    return render(request, 'tasks/add_task.html', {
+        'form': form,
+        'employees': employees  # Pass the list of employees to the template
+    })
 
 
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
 def edit_task(request, task_id):
     task = get_object_or_404(Task, id=task_id)
+
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            return redirect('task_list')
+            return redirect('task_list')  # or your target page
     else:
         form = TaskForm(instance=task)
-    return render(request, 'edit_task.html', {'form': form})
 
+    # 👇 Fetch all employees for the dropdown
+    employees = Employee.objects.all()
 
+    # 👇 Send form, task, and employees to the template
+    return render(request, 'edit_task.html', {
+        'form': form,
+        'task': task,
+        'employees': employees,
+    })
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
 def delete_task(request, task_id):

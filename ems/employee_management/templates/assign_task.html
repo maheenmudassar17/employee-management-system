@@ -1,5 +1,40 @@
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Add Task</button>
-</form>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/task.css' %}">
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+  <div class="card" style="width: 100%; max-width: 600px;">
+    <div class="card-header text-center">
+      <h3>Assign Task</h3>
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+          {{ form.name.label_tag }}
+          {{ form.name }}
+          {{ form.name.errors }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.description.label_tag }}
+          {{ form.description }}
+          {{ form.description.errors }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.assigned_to.label_tag }}
+          {{ form.assigned_to }}
+          {{ form.assigned_to.errors }}
+        </div>
+
+        <button type="submit" class="btn justify-content-center btn-primary">Assign Task</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
