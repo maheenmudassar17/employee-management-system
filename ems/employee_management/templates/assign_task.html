@@ -10,6 +10,11 @@
       <h3>Assign Task</h3>
     </div>
     <div class="card-body">
+
+      <!-- Back to Task List Button -->
+      <div class="mb-3 text-end">
+      </div>
+
       <form method="POST">
         {% csrf_token %}
         {{ form.non_field_errors }}
@@ -33,6 +38,8 @@
         </div>
 
         <button type="submit" class="btn justify-content-center btn-primary">Assign Task</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Back to Task List</a>
+
       </form>
     </div>
   </div>

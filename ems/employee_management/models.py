@@ -22,7 +22,7 @@ class Employee(models.Model):
 # models.py
 
 class Task(models.Model):
-    name = models.CharField(max_length=255, default='Untitled Task')
+    name = models.CharField(max_length=255, default='')
     description = models.TextField()
     assigned_to = models.ForeignKey(Employee, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Completed', 'Completed')], default='Pending')

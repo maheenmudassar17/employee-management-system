@@ -11,7 +11,6 @@
             <tr>
                 <th>Task</th>
                 <th>Description</th>
-                <th>Due Date</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -21,7 +20,6 @@
             <tr>
                 <td>{{ task.name }}</td>
                 <td>{{ task.description }}</td>
-                <td>{{ task.due_date }}</td>
                 <td>{{ task.status }}</td>
                 <td>
                     {% if task.status != 'Completed' %}

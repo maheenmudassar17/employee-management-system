@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect
 from .models import Task
+from django.db.models import Q
+
 
 
 
@@ -54,24 +56,33 @@ def employee_list(request):
 
 @login_required(login_url='/')
 @user_passes_test(superuser_only, login_url='/')
+
 def add_employee(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         emp_form = EmployeeForm(request.POST)
         if user_form.is_valid() and emp_form.is_valid():
-            user = user_form.save(commit=False)
-            user.set_password(user_form.cleaned_data['password'])
-            user.save()
+            user = user_form.save()
             employee = emp_form.save(commit=False)
             employee.user = user
             employee.save()
-            return redirect('employee_list')
+            return redirect('employee_list')  # or wherever you want to redirect
     else:
         user_form = UserForm()
         emp_form = EmployeeForm()
-    return render(request, 'employee_form.html', {'user_form': user_form, 'emp_form': emp_form})
 
+    # Add custom CSS classes to form fields
+    user_form.fields['username'].widget.attrs.update({'class': 'form-control'})
+    user_form.fields['email'].widget.attrs.update({'class': 'form-control'})
+    user_form.fields['password'].widget.attrs.update({'class': 'form-control'})
+    
+    emp_form.fields['designation'].widget.attrs.update({'class': 'form-control'})
+    emp_form.fields['salary'].widget.attrs.update({'class': 'form-control'})
 
+    return render(request, 'employee_form.html', {
+        'user_form': user_form,
+        'emp_form': emp_form
+    })
 def employee_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -183,7 +194,7 @@ def add_task(request):
             # Process form data
             form.save()
 
-    return render(request, 'tasks/add_task.html', {
+    return render(request, 'assign_task.html', {
         'form': form,
         'employees': employees  # Pass the list of employees to the template
     })
@@ -223,3 +234,32 @@ def custom_login(request):
     # login logic
     if request.user.is_authenticated:
         return redirect('employee_task_list')  # Redirect to the employee task list page
+
+
+def admin_dashboard(request):
+    query = request.GET.get('q')
+    if query:
+        employees = Employee.objects.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(user__email__icontains=query) |
+            Q(designation__icontains=query)
+        )
+    else:
+        employees = Employee.objects.all()
+    return render(request, 'admin_dashboard.html', {'employees': employees})
+
+
+
+def task_list(request):
+    query = request.GET.get('q')
+    if query:
+        tasks = Task.objects.filter(
+            Q(name__icontains=query) |
+            Q(assigned_to__user__first_name__icontains=query) |
+            Q(assigned_to__user__last_name__icontains=query)
+        )
+    else:
+        tasks = Task.objects.all()
+    return render(request, 'task_list.html', {'tasks': tasks})

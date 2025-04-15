@@ -8,6 +8,12 @@
         <a href="{% url 'task_list' %}" class="btn btn-primary">Manage Tasks</a>
     </div>
     <div>
+        <form method="GET" class="d-flex">
+            <input type="text" name="q" class="form-control me-2" placeholder="Search by name, email, or designation" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <div>
         <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
     </div>
 </div>

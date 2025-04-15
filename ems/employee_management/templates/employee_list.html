@@ -2,7 +2,12 @@
 
 {% block content %}
 <h2>Employee List</h2>
-<a href="{% url 'add_employee' %}" class="btn btn-success mb-3">Add Employee</a>
+
+<div class="mb-3 d-flex justify-content-between">
+    <a href="{% url 'add_employee' %}" class="btn btn-success">Add Employee</a>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+
 <table class="table table-bordered">
     <tr>
         <th>Name</th>

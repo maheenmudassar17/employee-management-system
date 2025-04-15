@@ -1,7 +1,8 @@
 # employee_management/urls.py
-
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.login_view, name='login'),
@@ -24,9 +25,10 @@ urlpatterns = [
     path('edit-task/<int:task_id>/', views.edit_task, name='edit_task'),
     path('delete-task/<int:task_id>/', views.delete_task, name='delete_task'),
     path('logout/', views.logout_view, name='logout'),
-
-
+    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
 
 
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
